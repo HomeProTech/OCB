@@ -1046,7 +1046,7 @@ class MailThread(models.AbstractModel):
         # Delivered-To is a safe bet in most modern MTAs, but we have to fallback on To + Cc values
         # for all the odd MTAs out there, as there is no standard header for the envelope's `rcpt_to` value.
         rcpt_tos = ','.join([
-            tools.decode_message_header(message, 'Delivered-To'),
+            tools.decode_message_header(message, 'Delivered-To', separator=','),
             tools.decode_message_header(message, 'To'),
             tools.decode_message_header(message, 'Cc'),
             tools.decode_message_header(message, 'Resent-To'),
