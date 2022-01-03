@@ -6,6 +6,7 @@ import itertools
 import json
 import textwrap
 import uuid
+from contextlib import closing
 from datetime import datetime
 from subprocess import Popen, PIPE
 from odoo import fields, tools, SUPERUSER_ID
@@ -19,6 +20,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 MAX_CSS_RULES = 4095
+EXTENSIONS = (".js", ".css", ".scss", ".sass", ".less")
 
 
 def rjsmin(script):
@@ -480,7 +482,7 @@ class WebAsset(object):
         try:
             self.stat()
             if self._filename:
-                with open(self._filename, 'rb') as fp:
+                with closing(file_open(self._filename, 'rb', filter_ext=EXTENSIONS)) as fp:
                     return fp.read().decode('utf-8')
             else:
                 return self._ir_attach['datas'].decode('base64').decode('utf-8')

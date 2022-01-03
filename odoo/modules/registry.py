@@ -105,6 +105,7 @@ class Registry(Mapping):
         if update_module:
             # only in case of update, otherwise we'll have an infinite reload loop!
             registry.signal_registry_change()
+        registry.new = registry.init = registry.registries = None
         return registry
 
     def init(self, db_name):
