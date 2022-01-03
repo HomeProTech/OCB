@@ -14,7 +14,7 @@ from odoo.http import request
 from odoo.modules.module import get_resource_path
 import psycopg2
 import werkzeug
-from odoo.tools import func, misc
+from odoo.tools import func, misc, file_open
 
 import logging
 _logger = logging.getLogger(__name__)
