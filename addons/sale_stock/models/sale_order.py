@@ -39,10 +39,10 @@ class SaleOrder(models.Model):
         for order in self:
             order.order_line._action_launch_procurement_rule()
 
-    @api.depends('picking_ids')
-    def _compute_picking_ids(self):
-        for order in self:
-            order.delivery_count = len(order.picking_ids)
+#     @api.depends('picking_ids')
+#     def _compute_picking_ids(self):
+#         for order in self:
+#             order.delivery_count = len(order.picking_ids)
 
     @api.onchange('warehouse_id')
     def _onchange_warehouse_id(self):
