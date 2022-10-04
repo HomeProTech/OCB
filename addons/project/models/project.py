@@ -671,11 +671,11 @@ class Task(models.Model):
         now = fields.Datetime.now()
         # stage change: update date_last_stage_update
         if 'stage_id' in vals:
-            vals.update(self.update_date_end(vals['stage_id']))
+            # vals.update(self.update_date_end(vals['stage_id'])) # Override to stop setting date_end to false when changing stage
             vals['date_last_stage_update'] = now
             # reset kanban state when changing stage
-            if 'kanban_state' not in vals:
-                vals['kanban_state'] = 'normal'
+            #if 'kanban_state' not in vals:
+            #    vals['kanban_state'] = 'normal' # Override to not reset the kanban state on stage change
         # user_id change: update date_assign
         if vals.get('user_id') and 'date_assign' not in vals:
             vals['date_assign'] = now
