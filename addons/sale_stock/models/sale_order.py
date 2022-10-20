@@ -90,25 +90,25 @@ class SaleOrderLine(models.Model):
     route_id = fields.Many2one('stock.location.route', string='Route', domain=[('sale_selectable', '=', True)], ondelete='restrict')
     move_ids = fields.One2many('stock.move', 'sale_line_id', string='Stock Moves')
 
-    @api.model
-    def create(self, values):
-        line = super(SaleOrderLine, self).create(values)
-        if line.state == 'sale':
-            line._action_launch_procurement_rule()
-        return line
+    # @api.model
+    # def create(self, values):
+    #     line = super(SaleOrderLine, self).create(values)
+    #     if line.state == 'sale':
+    #         line._action_launch_procurement_rule()
+    #     return line
 
-    @api.multi
-    def write(self, values):
-        lines = self.env['sale.order.line']
-        if 'product_uom_qty' in values:
-            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            lines = self.filtered(
-                lambda r: r.state == 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) == -1)
-        previous_product_uom_qty = {line.id: line.product_uom_qty for line in lines}
-        res = super(SaleOrderLine, self).write(values)
-        if lines:
-            lines.with_context(previous_product_uom_qty=previous_product_uom_qty)._action_launch_procurement_rule()
-        return res
+    # @api.multi
+    # def write(self, values):
+    #     lines = self.env['sale.order.line']
+    #     if 'product_uom_qty' in values:
+    #         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+    #         lines = self.filtered(
+    #             lambda r: r.state == 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) == -1)
+    #     previous_product_uom_qty = {line.id: line.product_uom_qty for line in lines}
+    #     res = super(SaleOrderLine, self).write(values)
+    #     if lines:
+    #         lines.with_context(previous_product_uom_qty=previous_product_uom_qty)._action_launch_procurement_rule()
+    #     return res
     
 
     @api.depends('order_id.state')
