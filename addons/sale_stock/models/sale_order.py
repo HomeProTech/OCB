@@ -66,10 +66,10 @@ class SaleOrder(models.Model):
             action['res_id'] = pickings.id
         return action
 
-    @api.multi
-    def action_cancel(self):
-        self.mapped('picking_ids').action_cancel()
-        return super(SaleOrder, self).action_cancel()
+    # @api.multi
+    # def action_cancel(self):
+    #     self.mapped('picking_ids').action_cancel()
+    #     return super(SaleOrder, self).action_cancel()
 
     @api.multi
     def _prepare_invoice(self):
