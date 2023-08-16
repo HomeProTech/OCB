@@ -79,10 +79,10 @@ class SaleOrder(models.Model):
             order.order_line._action_launch_stock_rule()
         super(SaleOrder, self)._action_confirm()
 
-    @api.depends('picking_ids')
-    def _compute_picking_ids(self):
-        for order in self:
-            order.delivery_count = len(order.picking_ids)
+    # @api.depends('picking_ids')
+    # def _compute_picking_ids(self):
+    #     for order in self:
+    #         order.delivery_count = len(order.picking_ids)
 
     @api.onchange('warehouse_id')
     def _onchange_warehouse_id(self):
@@ -125,23 +125,23 @@ class SaleOrder(models.Model):
             action['res_id'] = pickings.id
         return action
 
-    @api.multi
-    def action_cancel(self):
-        documents = None
-        for sale_order in self:
-            if sale_order.state == 'sale' and sale_order.order_line:
-                sale_order_lines_quantities = {order_line: (order_line.product_uom_qty, 0) for order_line in sale_order.order_line}
-                documents = self.env['stock.picking']._log_activity_get_documents(sale_order_lines_quantities, 'move_ids', 'UP')
-        self.mapped('picking_ids').action_cancel()
-        if documents:
-            filtered_documents = {}
-            for (parent, responsible), rendering_context in documents.items():
-                if parent._name == 'stock.picking':
-                    if parent.state == 'cancel':
-                        continue
-                filtered_documents[(parent, responsible)] = rendering_context
-            self._log_decrease_ordered_quantity(filtered_documents, cancel=True)
-        return super(SaleOrder, self).action_cancel()
+    # @api.multi
+    # def action_cancel(self):
+    #     documents = None
+    #     for sale_order in self:
+    #         if sale_order.state == 'sale' and sale_order.order_line:
+    #             sale_order_lines_quantities = {order_line: (order_line.product_uom_qty, 0) for order_line in sale_order.order_line}
+    #             documents = self.env['stock.picking']._log_activity_get_documents(sale_order_lines_quantities, 'move_ids', 'UP')
+    #     self.mapped('picking_ids').action_cancel()
+    #     if documents:
+    #         filtered_documents = {}
+    #         for (parent, responsible), rendering_context in documents.items():
+    #             if parent._name == 'stock.picking':
+    #                 if parent.state == 'cancel':
+    #                     continue
+    #             filtered_documents[(parent, responsible)] = rendering_context
+    #         self._log_decrease_ordered_quantity(filtered_documents, cancel=True)
+    #     return super(SaleOrder, self).action_cancel()
 
     @api.multi
     def _prepare_invoice(self):
@@ -214,24 +214,24 @@ class SaleOrderLine(models.Model):
                         qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
                 line.qty_delivered = qty
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        lines = super(SaleOrderLine, self).create(vals_list)
-        lines.filtered(lambda line: line.state == 'sale')._action_launch_stock_rule()
-        return lines
+    # @api.model_create_multi
+    # def create(self, vals_list):
+    #     lines = super(SaleOrderLine, self).create(vals_list)
+    #     lines.filtered(lambda line: line.state == 'sale')._action_launch_stock_rule()
+    #     return lines
 
-    @api.multi
-    def write(self, values):
-        lines = self.env['sale.order.line']
-        if 'product_uom_qty' in values:
-            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            lines = self.filtered(
-                lambda r: r.state == 'sale' and not r.is_expense and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) == -1)
-        previous_product_uom_qty = {line.id: line.product_uom_qty for line in lines}
-        res = super(SaleOrderLine, self).write(values)
-        if lines:
-            lines.with_context(previous_product_uom_qty=previous_product_uom_qty)._action_launch_stock_rule()
-        return res
+    # @api.multi
+    # def write(self, values):
+    #     lines = self.env['sale.order.line']
+    #     if 'product_uom_qty' in values:
+    #         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+    #         lines = self.filtered(
+    #             lambda r: r.state == 'sale' and not r.is_expense and float_compare(r.product_uom_qty, values['product_uom_qty'], precision_digits=precision) == -1)
+    #     previous_product_uom_qty = {line.id: line.product_uom_qty for line in lines}
+    #     res = super(SaleOrderLine, self).write(values)
+    #     if lines:
+    #         lines.with_context(previous_product_uom_qty=previous_product_uom_qty)._action_launch_stock_rule()
+    #     return res
 
     @api.depends('order_id.state')
     def _compute_invoice_status(self):
