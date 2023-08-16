@@ -776,9 +776,10 @@ class Partner(models.Model):
                          FROM {from_str}
                       {where} ({email} {operator} {percent}
                            OR {display_name} {operator} {percent}
-                           OR {reference} {operator} {percent}
-                           OR {vat} {operator} {percent})
-                           -- don't panic, trust postgres bitmap
+                           -- OR {reference} {operator} {percent}
+                           -- OR {vat} {operator} {percent}
+                           )
+                           -- don't panic, trust postgres bitmap - DO NOT TRUST
                      ORDER BY {display_name} {operator} {percent} desc,
                               {display_name}
                     """.format(from_str=from_str,
