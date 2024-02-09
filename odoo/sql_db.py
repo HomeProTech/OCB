@@ -135,7 +135,7 @@ class Cursor(object):
             *any* data which may be modified during the life of the cursor.
 
     """
-    IN_MAX = 1000   # decent limit on size of IN queries - guideline = Oracle limit
+    IN_MAX = 500 # 1000   # decent limit on size of IN queries - guideline = Oracle limit
 
     def check(f):
         @wraps(f)
