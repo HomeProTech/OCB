@@ -527,7 +527,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             if not getattr(base, 'pool', None):
                 # the following attributes are not taken from model classes
                 if not base._inherit and not base._description:
-                    _logger.warning("The model %s has no _description", cls._name)
+                    _logger.debug("The model %s has no _description", cls._name) #TPM
                 cls._description = base._description or cls._description
                 cls._table = base._table or cls._table
                 cls._sequence = base._sequence or cls._sequence
