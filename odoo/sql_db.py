@@ -14,6 +14,7 @@ import itertools
 import logging
 import time
 import uuid
+import os
 
 import psycopg2
 import psycopg2.extras
@@ -630,6 +631,9 @@ class ConnectionPool(object):
                 break
         else:
             raise PoolError('This connection does not belong to the pool')
+        # TPM - if over 25% of allowed db_conn
+        if len(self._connections) >= (self._maxconn / 4):
+            _logger.warning('[%d] %r', os.getpid(),self)
 
     @locked
     def close_all(self, dsn=None):
@@ -691,6 +695,12 @@ def connection_info_for(db_or_uri):
         cfg = tools.config['db_' + p]
         if cfg:
             connection_info[p] = cfg
+    # TPM Add a given app name to the connection
+    try:
+        if tools.config['db_application_name']:
+            connection_info['application_name'] = tools.config['db_application_name']
+    except KeyError as ke:
+        pass
 
     return db_or_uri, connection_info
 
