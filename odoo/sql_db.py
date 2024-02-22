@@ -632,8 +632,8 @@ class ConnectionPool(object):
         else:
             raise PoolError('This connection does not belong to the pool')
         # TPM - if over 25% of allowed db_conn
-        if len(self._connections) >= (self._maxconn / 4):
-            _logger.warning('[%d] %r', os.getpid(),self)
+        # if len(self._connections) >= (self._maxconn / 4):
+        #     _logger.warning('[%d] %r', os.getpid(),self)
 
     @locked
     def close_all(self, dsn=None):
