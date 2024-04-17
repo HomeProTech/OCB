@@ -105,7 +105,8 @@ def dispatch_rpc(service_name, method, params):
             if psutil:
                 start_rss, start_vms = memory_info(psutil.Process(os.getpid()))
             if rpc_request and rpc_response_flag:
-                odoo.netsvc.log(rpc_request, logging.DEBUG, '%s.%s' % (service_name, method), replace_request_password(params))
+                # [TPM only for xml-rpc] odoo.netsvc.log(rpc_request, logging.DEBUG, '%s.%s' % (service_name, method), replace_request_password(params))
+                odoo.netsvc.log(rpc_request, logging.DEBUG, '%s.%s' % (service_name, method),[])
 
         threading.current_thread().uid = None
         threading.current_thread().dbname = None
@@ -124,7 +125,8 @@ def dispatch_rpc(service_name, method, params):
                 end_rss, end_vms = memory_info(psutil.Process(os.getpid()))
             logline = '%s.%s time:%.3fs mem: %sk -> %sk (diff: %sk)' % (service_name, method, end_time - start_time, start_vms / 1024, end_vms / 1024, (end_vms - start_vms)/1024)
             if rpc_response_flag:
-                odoo.netsvc.log(rpc_response, logging.DEBUG, logline, result)
+                # [TPM only for xml-rpc] odoo.netsvc.log(rpc_response, logging.DEBUG, logline, result)
+                odoo.netsvc.log(rpc_response, logging.DEBUG, logline, [])
             else:
                 odoo.netsvc.log(rpc_request, logging.DEBUG, logline, replace_request_password(params), depth=1)
 
@@ -689,8 +691,9 @@ class JsonRequest(WebRequest):
                 if psutil:
                     _, start_vms = memory_info(psutil.Process(os.getpid()))
                 if rpc_request and rpc_response_flag:
-                    rpc_request.debug('%s: %s %s, %s',
-                        endpoint, model, method, pprint.pformat(args))
+                    # [TPM for webclient/json] rpc_request.debug('%s: %s %s, %s',
+                    #    endpoint, model, method, pprint.pformat(args))
+                    rpc_request.debug('%s: %s %s',endpoint, model, method)
 
             result = self._call_function(**self.params)
 
@@ -702,7 +705,8 @@ class JsonRequest(WebRequest):
                 logline = '%s: %s %s: time:%.3fs mem: %sk -> %sk (diff: %sk)' % (
                     endpoint, model, method, end_time - start_time, start_vms / 1024, end_vms / 1024, (end_vms - start_vms)/1024)
                 if rpc_response_flag:
-                    rpc_response.debug('%s, %s', logline, pprint.pformat(result))
+                    # [TPM for webclient/json] rpc_response.debug('%s, %s', logline, pprint.pformat(result))
+                    rpc_response.debug('%s', logline)
                 else:
                     rpc_request.debug(logline)
 
