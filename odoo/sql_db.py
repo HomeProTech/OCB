@@ -677,6 +677,13 @@ def connection_info_for(db_or_uri):
         if cfg:
             connection_info[p] = cfg
 
+    # TPM Add a given app name to the connection
+    try:
+        if tools.config['db_application_name']:
+            connection_info['application_name'] = tools.config['db_application_name']
+    except KeyError as ke:
+        pass
+
     return db_or_uri, connection_info
 
 _Pool = None

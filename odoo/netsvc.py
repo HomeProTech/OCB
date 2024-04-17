@@ -72,6 +72,7 @@ class DBFormatter(logging.Formatter):
     def format(self, record):
         record.pid = os.getpid()
         record.dbname = getattr(threading.currentThread(), 'dbname', '?')
+        record.uid = getattr(threading.current_thread(), 'uid', '@')
         return logging.Formatter.format(self, record)
 
 class ColoredFormatter(DBFormatter):
@@ -94,7 +95,7 @@ def init_logger():
     resetlocale()
 
     # create a format for log messages and dates
-    format = '%(asctime)s %(pid)s %(levelname)s %(dbname)s %(name)s: %(message)s'
+    format = '%(asctime)s %(pid)s %(levelname)s %(dbname)s %(uid)s %(name)s: %(message)s'
     # Normal Handler on stderr
     handler = logging.StreamHandler()
 
