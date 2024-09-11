@@ -166,7 +166,7 @@ class Picking(models.Model):
     _name = "stock.picking"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Transfer"
-    _order = "priority desc, date asc, id desc"
+    # _order = "priority desc, date asc, id desc"
 
     name = fields.Char(
         'Reference', default='/',
