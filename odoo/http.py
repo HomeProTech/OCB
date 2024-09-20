@@ -1203,16 +1203,18 @@ class OpenERPSession(sessions.Session):
 
 
 def session_gc(session_store):
-    if random.random() < 0.001:
-        # we keep session one week
-        last_week = time.time() - 60*60*24*7
-        for fname in os.listdir(session_store.path):
-            path = os.path.join(session_store.path, fname)
-            try:
-                if os.path.getmtime(path) < last_week:
-                    os.unlink(path)
-            except OSError:
-                pass
+    # if random.random() < 0.001:
+    #     # we keep session one week
+    #     last_week = time.time() - 60*60*24*7
+    #     for fname in os.listdir(session_store.path):
+    #         path = os.path.join(session_store.path, fname)
+    #         try:
+    #             if os.path.getmtime(path) < last_week:
+    #                 os.unlink(path)
+    #         except OSError:
+    #             pass
+    # Overriding this as it creates more issues than its worth.
+    return
 
 #----------------------------------------------------------
 # WSGI Layer
