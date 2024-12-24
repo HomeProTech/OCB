@@ -88,7 +88,7 @@ _EXPR_OPCODES = _CONST_OPCODES.union(set(opmap[x] for x in [
     'SLICE+0', 'SLICE+1', 'SLICE+2', 'SLICE+3', 'BUILD_SLICE',
     # comprehensions
     'LIST_APPEND', 'MAP_ADD', 'SET_ADD',
-    'COMPARE_OP',
+    'COMPARE_OP', 'IS_OP',
     # specialised comparisons
     'CONTAINS_OP',
     'DICT_MERGE',
