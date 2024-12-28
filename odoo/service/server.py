@@ -915,7 +915,7 @@ class Worker(object):
 
         # update RLIMIT_CPU so limit_time_cpu applies per unit of work
         r = resource.getrusage(resource.RUSAGE_SELF)
-        cpu_time = r.ru_utime + r.ru_stime
+        cpu_time = int(r.ru_utime + r.ru_stime) # returns in float seconds but setrlimit needs int
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
 
