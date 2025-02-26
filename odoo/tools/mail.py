@@ -496,6 +496,8 @@ def email_split(text):
     """ Return a list of the email addresses found in ``text`` """
     if not text:
         return []
+    # added: cleanup any extra commas
+    text = _clean_email_address_string(text)
     return [addr[1] for addr in getaddresses([text])
                 # getaddresses() returns '' when email parsing fails, and
                 # sometimes returns emails without at least '@'. The '@'
@@ -508,6 +510,8 @@ def email_split_and_format(text):
     formataddr. """
     if not text:
         return []
+    # added: cleanup any extra commas
+    text = _clean_email_address_string(text)
     return [formataddr((addr[0], addr[1])) for addr in getaddresses([text])
                 # getaddresses() returns '' when email parsing fails, and
                 # sometimes returns emails without at least '@'. The '@'
@@ -538,6 +542,8 @@ def email_domain_extract(email):
     """Return the domain of the given email."""
     if not email:
         return
+    # added: cleanup any extra commas
+    email = _clean_email_address_string(email)
 
     email_split = getaddresses([email])
     if not email_split or not email_split[0]:
@@ -636,3 +642,17 @@ def encapsulate_email(old_email, new_email):
         name_part,
         new_email_split[0][1],
     ))
+
+def _clean_email_address_string(text):
+    # clean the resultant text from extraneous commas when those field values are None.
+    # Py3.10 email address parser uses strict mode by default and the extra commas trips it.
+    # Instead of fixing mail_thread.message_route, this will probably be the most generic way
+    # rcpt_tos = ','.join(filter(None, [
+    #     tools.decode_message_header(message, 'Delivered-To'),
+    #     tools.decode_message_header(message, 'To'),
+    #     tools.decode_message_header(message, 'Cc'),
+    #     tools.decode_message_header(message, 'Resent-To'),
+    #     tools.decode_message_header(message, 'Resent-Cc')]
+    #     ))
+    text = ",".join(filter(None, text.split(",")))
+    return text
