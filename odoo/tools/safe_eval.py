@@ -91,7 +91,7 @@ _EXPR_OPCODES = _CONST_OPCODES.union(set(opmap[x] for x in [
     'COMPARE_OP', 'IS_OP',
     # specialised comparisons
     'CONTAINS_OP',
-    'DICT_MERGE',
+    'DICT_MERGE', 'DICT_UPDATE'
 ] if x in opmap))
 
 _SAFE_OPCODES = _EXPR_OPCODES.union(set(opmap[x] for x in [
