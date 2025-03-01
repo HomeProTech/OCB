@@ -67,10 +67,11 @@ _CONST_OPCODES = set(opmap[x] for x in [
     'BUILD_LIST', 'BUILD_MAP', 'BUILD_TUPLE', 'BUILD_SET',
     # 3.6: literal map with constant keys https://bugs.python.org/issue27140
     'BUILD_CONST_KEY_MAP',
-    'LIST_EXTEND',
     # until Python 3.5, literal maps are compiled to creating an empty map
     # (pre-sized) then filling it key by key
     'STORE_MAP',
+    # 3.9
+    'LIST_EXTEND', 'SET_UPDATE',
 ] if x in opmap)
 
 # operations on literal values
@@ -88,16 +89,16 @@ _EXPR_OPCODES = _CONST_OPCODES.union(set(opmap[x] for x in [
     'SLICE+0', 'SLICE+1', 'SLICE+2', 'SLICE+3', 'BUILD_SLICE',
     # comprehensions
     'LIST_APPEND', 'MAP_ADD', 'SET_ADD',
-    'COMPARE_OP', 'IS_OP',
-    # specialised comparisons
-    'CONTAINS_OP',
-    'DICT_MERGE', 'DICT_UPDATE'
+    # split in Py3.9 into 4 separate
+    'COMPARE_OP', 'IS_OP', 'CONTAINS_OP', # specialised comparisons
+    'DICT_MERGE', 'DICT_UPDATE',
 ] if x in opmap))
 
 _SAFE_OPCODES = _EXPR_OPCODES.union(set(opmap[x] for x in [
     'GEN_START',  # added in 3.10
     'POP_BLOCK', 'POP_EXCEPT', # Seems to be a special-case of POP_BLOCK for P3
-    'SETUP_LOOP', 'BREAK_LOOP', 'CONTINUE_LOOP',
+    # removed in py3.8
+    'BREAK_LOOP', 'CONTINUE_LOOP','SETUP_LOOP', 'SETUP_EXCEPT',
     'MAKE_FUNCTION', 'CALL_FUNCTION',
     'EXTENDED_ARG',  # P3.6 for long jump offsets.
     # P3: https://bugs.python.org/issue27213
@@ -108,9 +109,11 @@ _SAFE_OPCODES = _EXPR_OPCODES.union(set(opmap[x] for x in [
     'CALL_METHOD', 'LOAD_METHOD',
     'GET_ITER', 'FOR_ITER', 'YIELD_VALUE',
     'JUMP_FORWARD', 'JUMP_IF_TRUE', 'JUMP_IF_FALSE', 'JUMP_ABSOLUTE',
+    # Added in P3.8: https://bugs.python.org/issue17611
+    'BEGIN_FINALLY', 'CALL_FINALLY', 'POP_FINALLY',
     # New in Python 2.7 - http://bugs.python.org/issue4715 :
     'JUMP_IF_FALSE_OR_POP', 'JUMP_IF_TRUE_OR_POP', 'POP_JUMP_IF_FALSE',
-    'POP_JUMP_IF_TRUE', 'SETUP_EXCEPT', 'SETUP_FINALLY', 'END_FINALLY',
+    'POP_JUMP_IF_TRUE', 'SETUP_FINALLY', 'END_FINALLY',
     'RAISE_VARARGS', 'LOAD_NAME', 'STORE_NAME', 'DELETE_NAME', 'LOAD_ATTR',
     'LOAD_FAST', 'STORE_FAST', 'DELETE_FAST', 'UNPACK_SEQUENCE',
     'LOAD_GLOBAL', # Only allows access to restricted globals
@@ -277,7 +280,7 @@ _BUILTINS = {
     'None': None,
     'bytes': bytes,
     'str': str,
-    'unicode': pycompat.text_type,
+    'unicode': str,
     'bool': bool,
     'int': int,
     'float': float,
