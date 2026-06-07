@@ -181,6 +181,12 @@ _SAFE_OPCODES = _EXPR_OPCODES.union(to_opcodes([
     'STORE_FAST_STORE_FAST', 'STORE_FAST_LOAD_FAST',
     'CONVERT_VALUE', 'FORMAT_SIMPLE', 'FORMAT_WITH_SPEC',
     'SET_FUNCTION_ATTRIBUTE',
+    # 3.13's compiler emits this when a try/except sits next to a loop: the
+    # cold except-handler is relocated after the loop body, turning its exit
+    # into a backwards (no-interrupt) jump. Affects exec-mode safe_eval (server
+    # actions / crons) with that shape; eval-mode expressions can't emit it.
+    # Harmless control flow; still missing from upstream OCB as of 18.0.
+    'JUMP_BACKWARD_NO_INTERRUPT',
 ])) - _BLACKLIST
 
 
